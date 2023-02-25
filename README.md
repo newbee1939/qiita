@@ -3,6 +3,9 @@
 # document
 
 - Qiita API:https://qiita.com/api/v2/docs
+- created:>2015-10-01 created:<2015-11-01
+- like: qiita.likes_count,
+- https://help.qiita.com/ja/articles/qiita-search-options
 
 # 実行方法
 

@@ -7,6 +7,8 @@
 - like: qiita.likes_count,
 - https://help.qiita.com/ja/articles/qiita-search-options
 
+TODO: 無料のバッチで自動更新にしたい
+
 # 実行方法
 
 - npm run hoge.ts

@@ -6,12 +6,14 @@ makeStocksRankingArticle();
 
 async function makeStocksRankingArticle() {
   const stocksRanking = await makeStocksRanking();
+
+  // TODO: ランキングをもとに記事を作成して投稿する
   console.log(stocksRanking);
 }
 
 async function makeStocksRanking() {
   let pageNumber = 1;
-  let allData: any = [];
+  let allResponseData: any = [];
   while (true) {
     const responseData = (
       await axios.get("https://qiita.com//api/v2/items", {
@@ -19,29 +21,28 @@ async function makeStocksRanking() {
           Authorization: `Bearer ${accessToken}`,
         },
         params: {
-          query: "stocks:>4000",
+          query: "stocks:>2000",
           page: pageNumber,
-          per_page: 30,
+          per_page: 100,
         },
       })
-    ).data.map((qiita: any) => {
+    ).data.map((article: any) => {
       return {
-        title: qiita.title,
-        stocksCount: qiita.stocks_count,
+        title: article.title,
+        stocksCount: article.stocks_count,
       };
     });
 
-    allData.push(responseData);
-
     if (responseData.length === 0) {
-      console.log("break");
       break;
     }
+
+    allResponseData.push(responseData);
 
     pageNumber++;
   }
 
-  return allData.flat().sort((a: any, b: any) => {
+  const stocksRanking = allResponseData.flat().sort((a: any, b: any) => {
     if (a.stocksCount > b.stocksCount) {
       return -1;
     }
@@ -50,4 +51,6 @@ async function makeStocksRanking() {
     }
     return 0;
   });
+
+  return stocksRanking;
 }

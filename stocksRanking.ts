@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as fs from "node:fs/promises";
 
 const accessToken = process.env.ACCESS_TOKEN;
 
@@ -6,17 +7,14 @@ makeStocksRankingArticle();
 
 async function makeStocksRankingArticle() {
   const stocksRanking = await makeStocksRanking();
-
-  console.log(stocksRanking);
-
-  // TODO: ランキングをもとに記事を作成して投稿する
   await makeAndPostArticle(stocksRanking);
 }
 
 async function makeStocksRanking() {
   let pageNumber = 1;
-  let allResponseData: any = [];
+  let allResponseData = [];
   while (true) {
+    // 1ページ100件ずつデータを取得
     const responseData = (
       await axios.get("https://qiita.com//api/v2/items", {
         headers: {
@@ -47,15 +45,18 @@ async function makeStocksRanking() {
     pageNumber++;
   }
 
-  const stocksRanking = allResponseData.flat().sort((a: any, b: any) => {
-    if (a.stocksCount > b.stocksCount) {
-      return -1;
-    }
-    if (a.stocksCount < b.stocksCount) {
-      return 1;
-    }
-    return 0;
-  });
+  const stocksRanking = allResponseData
+    .flat()
+    .sort((a: any, b: any) => {
+      if (a.stocksCount > b.stocksCount) {
+        return -1;
+      }
+      if (a.stocksCount < b.stocksCount) {
+        return 1;
+      }
+      return 0;
+    })
+    .slice(0, 100);
 
   return stocksRanking;
 }
@@ -65,8 +66,14 @@ async function makeStocksRanking() {
 async function makeAndPostArticle(stocksRanking: any) {
   const articleInformation = {
     title: "【保存版】Qiitaの歴代ストック数ランキング100",
-    body: await fs.readFile("stocksRanking.md", "utf-8"),
-    tags: [{ name: "TypeScript" }, { name: "Qiita API" }],
+    body: await makeArticleBody(stocksRanking),
+    private: true,
+    tags: [
+      { name: "TypeScript" },
+      { name: "QiitaAPI" },
+      { name: "Qiita" },
+      { name: "JavaScript" },
+    ],
   };
 
   const headers = {
@@ -85,17 +92,23 @@ async function makeAndPostArticle(stocksRanking: any) {
   }
 }
 
-// TODO: 実際のマークダウンで試しつつ
 async function makeArticleBody(stocksRanking: any) {
-  const readSentence =
-    "歴代の全ての記事のストック数ランキングを作ってみました。<br>定期的に更新していく予定です。";
-  stocksRanking.reduce((prevArticleBody: string, stock: any, index: number) => {
-    return `${prevArticleBody}<br>## ${index + 1}位<br>`;
-  }, readSentence);
+  const lead =
+    "<strong>Qiitaの歴代の全ての記事のストック数ランキング</strong>を作ってみました。<br><br>ストック数が多いということは、それだけ多くの人が<strong>「定期的に見返したい」</strong>と思ったということ。<br><br>きっと仕事や個人プロジェクトで役立つ知見が詰まっていると思うので、チェックしていただけると幸いです。<br><br>※この記事は定期的に更新して最新状態を保つ予定です<br>";
+  stocksRanking.reduce(
+    async (prevArticleBody: string, rankingData: any, index: number) => {
+      const content = await fs.readFile("stocksRanking.md", "utf-8");
+      return (
+        prevArticleBody +
+        content
+          .replace("rank", `${index + 1}`)
+          .replace("title", rankingData.title)
+          .replace("stock", rankingData.stocksCount)
+          .replace("url", rankingData.url)
+          .replace("createdAt", rankingData.createdAt)
+          .replace("updatedAt", rankingData.updatedAt)
+      );
+    },
+    lead
+  );
 }
-
-// title: article.title,
-// stocksCount: article.stocks_count,
-// createdAt: article.created_at,
-// updatedAt: article.updated_at,
-// url: article.url,

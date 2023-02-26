@@ -3,5 +3,5 @@
 
 url
 
-作成日：createdAt
+投稿日：createdAt
 更新日：updatedAt

@@ -7,10 +7,10 @@ makeStocksRankingArticle();
 async function makeStocksRankingArticle() {
   const stocksRanking = await makeStocksRanking();
 
-  // TODO: ランキングをもとに記事を作成して投稿する
-  await makeAndPostArticle();
-
   console.log(stocksRanking);
+
+  // TODO: ランキングをもとに記事を作成して投稿する
+  await makeAndPostArticle(stocksRanking);
 }
 
 async function makeStocksRanking() {
@@ -32,6 +32,9 @@ async function makeStocksRanking() {
       return {
         title: article.title,
         stocksCount: article.stocks_count,
+        createdAt: article.created_at,
+        updatedAt: article.updated_at,
+        url: article.url,
       };
     });
 
@@ -58,10 +61,11 @@ async function makeStocksRanking() {
 }
 
 // TODO:一回目投稿した後は更新にしたいけどどうする？
-async function makeAndPostArticle() {
+// 一度投稿したらこれに変更で良さそう（https://qiita.com/api/v2/docs#patch-apiv2itemsitem_id）
+async function makeAndPostArticle(stocksRanking: any) {
   const articleInformation = {
     title: "【保存版】Qiitaの歴代ストック数ランキング100",
-    body: fs.readFileSync("path/to/markdown.md", "utf-8"),
+    body: await fs.readFile("stocksRanking.md", "utf-8"),
     tags: [{ name: "TypeScript" }, { name: "Qiita API" }],
   };
 
@@ -70,12 +74,28 @@ async function makeAndPostArticle() {
     "Content-Type": "application/json",
   };
 
-  axios
-    .post("https://qiita.com/api/v2/items", articleInformation, { headers })
-    .then((response) => {
-      console.log("投稿が完了しました");
-    })
-    .catch((error) => {
-      console.error(error);
+  try {
+    await axios.post("https://qiita.com/api/v2/items", articleInformation, {
+      headers,
     });
+    console.log("投稿が完了しました！");
+  } catch (e) {
+    console.log(e);
+    console.log("投稿に失敗しました。。");
+  }
 }
+
+// TODO: 実際のマークダウンで試しつつ
+async function makeArticleBody(stocksRanking: any) {
+  const readSentence =
+    "歴代の全ての記事のストック数ランキングを作ってみました。<br>定期的に更新していく予定です。";
+  stocksRanking.reduce((prevArticleBody: string, stock: any, index: number) => {
+    return `${prevArticleBody}<br>## ${index + 1}位<br>`;
+  }, readSentence);
+}
+
+// title: article.title,
+// stocksCount: article.stocks_count,
+// createdAt: article.created_at,
+// updatedAt: article.updated_at,
+// url: article.url,

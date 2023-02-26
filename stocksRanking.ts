@@ -1,5 +1,7 @@
 import axios from "axios";
 import * as fs from "node:fs/promises";
+import dotenv from "dotenv";
+dotenv.config();
 
 const accessToken = process.env.ACCESS_TOKEN;
 
@@ -14,7 +16,6 @@ async function makeStocksRanking() {
   let pageNumber = 1;
   let allResponseData = [];
   while (true) {
-    // 1ページ100件ずつデータを取得
     const responseData = (
       await axios.get("https://qiita.com//api/v2/items", {
         headers: {
@@ -61,11 +62,11 @@ async function makeStocksRanking() {
   return stocksRanking;
 }
 
-// TODO:一回目投稿した後は更新にしたいけどどうする？
+// TODO:一回目投稿した後は更新にしたい
 // 一度投稿したらこれに変更で良さそう（https://qiita.com/api/v2/docs#patch-apiv2itemsitem_id）
 async function makeAndPostArticle(stocksRanking: any) {
   const articleInformation = {
-    title: "【保存版】Qiitaの歴代ストック数ランキング100",
+    title: "【保存版】Qiita歴代ストック数ランキング100",
     body: await makeArticleBody(stocksRanking),
     private: true,
     tags: [
@@ -73,17 +74,16 @@ async function makeAndPostArticle(stocksRanking: any) {
       { name: "QiitaAPI" },
       { name: "Qiita" },
       { name: "JavaScript" },
+      { name: "初心者" },
     ],
-  };
-
-  const headers = {
-    Authorization: `Bearer ${accessToken}`,
-    "Content-Type": "application/json",
   };
 
   try {
     await axios.post("https://qiita.com/api/v2/items", articleInformation, {
-      headers,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
     });
     console.log("投稿が完了しました！");
   } catch (e) {
@@ -93,22 +93,29 @@ async function makeAndPostArticle(stocksRanking: any) {
 }
 
 async function makeArticleBody(stocksRanking: any) {
-  const lead =
-    "<strong>Qiitaの歴代の全ての記事のストック数ランキング</strong>を作ってみました。<br><br>ストック数が多いということは、それだけ多くの人が<strong>「定期的に見返したい」</strong>と思ったということ。<br><br>きっと仕事や個人プロジェクトで役立つ知見が詰まっていると思うので、チェックしていただけると幸いです。<br><br>※この記事は定期的に更新して最新状態を保つ予定です<br>";
-  stocksRanking.reduce(
+  const lead = "※この記事は定期的に更新して最新状態を保ちます<br>";
+  const articleBody = stocksRanking.reduce(
     async (prevArticleBody: string, rankingData: any, index: number) => {
       const content = await fs.readFile("stocksRanking.md", "utf-8");
       return (
-        prevArticleBody +
+        (await prevArticleBody) +
         content
           .replace("rank", `${index + 1}`)
           .replace("title", rankingData.title)
           .replace("stock", rankingData.stocksCount)
           .replace("url", rankingData.url)
-          .replace("createdAt", rankingData.createdAt)
-          .replace("updatedAt", rankingData.updatedAt)
+          .replace("createdAt", formatDate(rankingData.createdAt))
+          .replace("updatedAt", formatDate(rankingData.updatedAt))
       );
     },
     lead
   );
+
+  return articleBody;
 }
+
+export const formatDate = (dateTime: string): string => {
+  const date: Date = new Date(dateTime);
+
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+};

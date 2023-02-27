@@ -12,9 +12,15 @@ async function makeLikesRankingArticle() {
   await makeAndPostArticle(likesRanking);
 }
 
+// Qiitaは2011年9月16日からサービス開始
+// そこから現在時刻までのいいね数ランキングを作る
 async function makeLikesRanking() {
   let pageNumber = 1;
   let allResponseData = [];
+  // ここでqueryの文字列でmapで良さそう。どの範囲で10000件の制限を超えたかは分かるようにする
+  // 1,2,3位はランキングの文字の色を変えても楽しそう（https://qiita.com/tommy_aka_jps/items/7ad9e53872532336de38）
+  console.log(makeCreatedAtRangeList());
+
   while (true) {
     const responseData = (
       await axios.get("https://qiita.com//api/v2/items", {
@@ -22,7 +28,8 @@ async function makeLikesRanking() {
           Authorization: `Bearer ${accessToken}`,
         },
         params: {
-          query: "stocks:>2000",
+          // ここを徐々に増やしていけば良さそう。この文字列のリストを作ってmapとかでも良さそう
+          query: "created:>2011-09-01 created:<2011-10-01",
           page: pageNumber,
           per_page: 100,
         },
@@ -114,8 +121,31 @@ async function makeArticleBody(likesRanking: any) {
   return articleBody;
 }
 
-export const formatDate = (dateTime: string): string => {
+function formatDate(dateTime: string): string {
   const date: Date = new Date(dateTime);
 
   return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-};
+}
+
+function makeCreatedAtRangeList() {
+  const createdAtRangeList = [];
+  for (let year = 11; year <= new Date().getFullYear(); year++) {
+    for (let month = 1; month <= 12; month++) {
+      if (month === 12) {
+        createdAtRangeList.push(
+          `created:>20${year}-12-01 created:<20${year + 1}-01-01`
+        );
+      } else {
+        createdAtRangeList.push(
+          `created:>20${year}-${month
+            .toString()
+            .padStart(2, "0")}-01 created:<20${year}-${(month + 1)
+            .toString()
+            .padStart(2, "0")}-01`
+        );
+      }
+    }
+  }
+
+  return createdAtRangeList;
+}

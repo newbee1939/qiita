@@ -7,6 +7,8 @@
 - https://help.qiita.com/ja/articles/qiita-search-options
 
 TODO: 無料のバッチで自動更新にしたい
+TODO: jest でテスト書く
+TODO: TypeScript でスクラッチする場合のディレクトリ構成
 
 # 実行方法
 

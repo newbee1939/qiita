@@ -11,48 +11,62 @@ makeLikesRankingArticle();
 
 async function makeLikesRankingArticle() {
   const likesRanking = await makeLikesRanking();
+
   await makeAndPostArticle(likesRanking);
 }
 
 async function makeLikesRanking() {
-  const createdAtRangeList = makeCreatedAtRangeList();
-  const likesRanking = await createdAtRangeList.map(async (createdAtRange) => {
-    let pageNumber = 1;
-    let allResponseData = [];
+  const createdAtRangeList = await makeCreatedAtRangeList();
 
-    while (true) {
-      const responseData = await (
-        await axios.get("https://qiita.com//api/v2/items", {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          params: {
-            query: `${createdAtRange} stocks:>2000`,
-            page: pageNumber,
-            per_page: 100,
-          },
-        })
-      ).data.map((article: any) => {
-        return {
-          title: article.title,
-          likesCount: article.likes_count,
-          createdAt: article.created_at,
-          updatedAt: article.updated_at,
-          url: article.url,
-        };
-      });
+  const likesRanking = await Promise.all(
+    createdAtRangeList.map(async (createdAtRange, index) => {
+      console.log(`${index}:${createdAtRange}`);
 
-      if (responseData.length === 0) {
-        break;
+      let pageNumber = 1;
+      let allResponseData = [];
+
+      while (true) {
+        const responseData = (
+          await axios.get("https://qiita.com/api/v2/items", {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+              query: `${createdAtRange} stocks:>4000`,
+              page: pageNumber,
+              per_page: 100,
+            },
+          })
+        ).data.map((article: any) => {
+          return {
+            title: article.title,
+            likesCount: article.likes_count,
+            createdAt: article.created_at,
+            updatedAt: article.updated_at,
+            url: article.url,
+          };
+        });
+
+        // console.log("---------------------------");
+        // console.log(createdAtRange);
+        // console.log("---------------------------");
+        if (responseData.length === 0) {
+          break;
+        }
+
+        // console.log("---------------------------");
+        // console.log(responseData);
+        // console.log(createdAtRange);
+        // console.log("---------------------------");
+
+        allResponseData.push(responseData);
+
+        pageNumber++;
       }
 
-      allResponseData.push(await responseData);
-
-      pageNumber++;
-    }
-
-    return allResponseData.flat();
-  });
+      return allResponseData;
+    })
+  );
 
   return likesRanking
     .flat()
@@ -83,6 +97,8 @@ async function makeAndPostArticle(likesRanking: any) {
       { name: "初心者" },
     ],
   };
+
+  console.log("postきった");
 
   try {
     await axios.post("https://qiita.com/api/v2/items", articleInformation, {
@@ -120,7 +136,7 @@ async function makeArticleBody(likesRanking: any) {
   return articleBody;
 }
 
-function makeCreatedAtRangeList() {
+async function makeCreatedAtRangeList() {
   const createdAtRangeList = [];
   for (
     let year = 11;

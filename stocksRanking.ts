@@ -100,7 +100,7 @@ async function makeArticleBody(stocksRanking: any) {
       return (
         (await prevArticleBody) +
         content
-          .replace("rank", `${index + 1}`)
+          .replace("rank", makeRank(index + 1))
           .replace("title", rankingData.title)
           .replace("stock", rankingData.stocksCount)
           .replace("url", rankingData.url)
@@ -119,3 +119,16 @@ export const formatDate = (dateTime: string): string => {
 
   return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
 };
+
+function makeRank(rank: number) {
+  if (rank === 1) {
+    return '<font color="#EFAF00">1位</font>';
+  }
+  if (rank === 2) {
+    return '<font color="#BBBDC0">2位</font>';
+  }
+  if (rank === 3) {
+    return '<font color="#C47222">3位</font>';
+  }
+  return `${rank}位`;
+}

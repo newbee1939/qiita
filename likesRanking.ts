@@ -12,52 +12,53 @@ async function makeLikesRankingArticle() {
   await makeAndPostArticle(likesRanking);
 }
 
-// Qiitaは2011年9月16日からサービス開始
-// そこから現在時刻までのいいね数ランキングを作る
 async function makeLikesRanking() {
+  let apiRequestCount = 0;
   const createdAtRangeList = makeCreatedAtRangeList();
-  const hoge = createdAtRangeList.map(() => {
-    //
-  });
+  const likesRanking = createdAtRangeList.map(async (createdAtRange) => {
+    let pageNumber = 1;
+    let allResponseData = [];
 
-  let pageNumber = 1;
-  let allResponseData = [];
-  // ここでqueryの文字列でmapで良さそう。どの範囲で10000件の制限を超えたかは分かるようにする
-  // 1,2,3位はランキングの文字の色を変えても楽しそう（https://qiita.com/tommy_aka_jps/items/7ad9e53872532336de38）
+    while (true) {
+      const responseData = (
+        await axios.get("https://qiita.com//api/v2/items", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          params: {
+            query: createdAtRange,
+            page: pageNumber,
+            per_page: 100,
+          },
+        })
+      ).data.map((article: any) => {
+        return {
+          title: article.title,
+          likesCount: article.likes_count,
+          createdAt: article.created_at,
+          updatedAt: article.updated_at,
+          url: article.url,
+        };
+      });
+      apiRequestCount++;
 
-  while (true) {
-    const responseData = (
-      await axios.get("https://qiita.com//api/v2/items", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-        params: {
-          // ここを徐々に増やしていけば良さそう。この文字列のリストを作ってmapとかでも良さそう
-          query: "created:>2011-09-01 created:<2011-10-01",
-          page: pageNumber,
-          per_page: 100,
-        },
-      })
-    ).data.map((article: any) => {
-      return {
-        title: article.title,
-        likesCount: article.likes_count,
-        createdAt: article.created_at,
-        updatedAt: article.updated_at,
-        url: article.url,
-      };
-    });
+      if (responseData.length === 0) {
+        break;
+      }
 
-    if (responseData.length === 0) {
-      break;
+      allResponseData.push(responseData);
+
+      pageNumber++;
     }
 
-    allResponseData.push(responseData);
+    const likesRanking = allResponseData.flat();
 
-    pageNumber++;
-  }
+    return likesRanking;
+  });
 
-  const likesRanking = allResponseData
+  console.log(`APIのリクエスト回数は${apiRequestCount}回です`);
+
+  return likesRanking
     .flat()
     .sort((a: any, b: any) => {
       if (a.stocksCount > b.stocksCount) {
@@ -69,8 +70,6 @@ async function makeLikesRanking() {
       return 0;
     })
     .slice(0, 100);
-
-  return likesRanking;
 }
 
 // TODO:一回目投稿した後は更新にしたい
@@ -90,7 +89,6 @@ async function makeAndPostArticle(likesRanking: any) {
   };
 
   try {
-    // APIを叩いた回数を出したい
     await axios.post("https://qiita.com/api/v2/items", articleInformation, {
       headers: {
         Authorization: `Bearer ${accessToken}`,

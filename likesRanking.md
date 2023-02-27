@@ -1,5 +1,5 @@
 
-## 【rank位】title（likeいいね）
+## 【rank】title（likeいいね）
 
 url
 

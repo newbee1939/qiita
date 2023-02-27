@@ -51,20 +51,18 @@ async function makeLikesRanking() {
       pageNumber++;
     }
 
-    const likesRanking = allResponseData.flat();
-
-    return likesRanking;
+    return allResponseData.flat();
   });
 
-  console.log(`APIのリクエスト回数は${apiRequestCount}回です`);
+  console.log(`APIのリクエスト回数は${apiRequestCount}回です！`);
 
   return likesRanking
     .flat()
     .sort((a: any, b: any) => {
-      if (a.stocksCount > b.stocksCount) {
+      if (a.likesCount > b.likesCount) {
         return -1;
       }
-      if (a.stocksCount < b.stocksCount) {
+      if (a.likesCount < b.likesCount) {
         return 1;
       }
       return 0;

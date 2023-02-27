@@ -1,6 +1,8 @@
 import axios from "axios";
 import * as fs from "node:fs/promises";
 import dotenv from "dotenv";
+import { makeRank } from "./helper/makeRank";
+import { formatDate } from "./helper/formatDate";
 dotenv.config();
 
 const accessToken = process.env.ACCESS_TOKEN;
@@ -112,23 +114,4 @@ async function makeArticleBody(stocksRanking: any) {
   );
 
   return articleBody;
-}
-
-export const formatDate = (dateTime: string): string => {
-  const date: Date = new Date(dateTime);
-
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-};
-
-function makeRank(rank: number) {
-  if (rank === 1) {
-    return '<font color="#EFAF00">1位</font>';
-  }
-  if (rank === 2) {
-    return '<font color="#BBBDC0">2位</font>';
-  }
-  if (rank === 3) {
-    return '<font color="#C47222">3位</font>';
-  }
-  return `${rank}位`;
 }

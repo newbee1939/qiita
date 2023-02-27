@@ -14,14 +14,11 @@ async function makeLikesRankingArticle() {
   await makeAndPostArticle(likesRanking);
 }
 
-// ここから。undefinedになっってるぽい。。マジやる
 async function makeLikesRanking() {
   const createdAtRangeList = makeCreatedAtRangeList();
   const likesRanking = await createdAtRangeList.map(async (createdAtRange) => {
     let pageNumber = 1;
     let allResponseData = [];
-
-    console.log(createdAtRange);
 
     while (true) {
       const responseData = await (
@@ -30,18 +27,12 @@ async function makeLikesRanking() {
             Authorization: `Bearer ${accessToken}`,
           },
           params: {
-            query: createdAtRange,
+            query: `${createdAtRange} stocks:>2000`,
             page: pageNumber,
             per_page: 100,
           },
         })
       ).data.map((article: any) => {
-        console.log("ここた");
-
-        console.log(createdAtRange);
-
-        console.log(article);
-
         return {
           title: article.title,
           likesCount: article.likes_count,
@@ -50,10 +41,6 @@ async function makeLikesRanking() {
           url: article.url,
         };
       });
-
-      console.log("ここ来た");
-      console.log(responseData);
-      return;
 
       if (responseData.length === 0) {
         break;

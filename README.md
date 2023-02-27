@@ -10,6 +10,6 @@ TODO: 無料のバッチで自動更新にしたい
 TODO: jest でテスト書く
 TODO: TypeScript でスクラッチする場合のディレクトリ構成
 
-# 実行方法
+# 記事の更新方法
 
 - npm run hoge.ts

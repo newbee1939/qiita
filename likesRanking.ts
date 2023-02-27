@@ -16,61 +16,49 @@ async function makeLikesRankingArticle() {
 }
 
 async function makeLikesRanking() {
-  const createdAtRangeList = await makeCreatedAtRangeList();
+  const createdAtRangeList = makeCreatedAtRangeList();
+  const likesRanking = [];
 
-  const likesRanking = await Promise.all(
-    createdAtRangeList.map(async (createdAtRange, index) => {
-      console.log(`${index}:${createdAtRange}`);
+  for (const createdAtRange of createdAtRangeList) {
+    let pageNumber = 1;
+    let allResponseData = [];
 
-      let pageNumber = 1;
-      let allResponseData = [];
+    while (true) {
+      const responseData = (
+        await axios.get("https://qiita.com/api/v2/items", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          params: {
+            query: `${createdAtRange} stocks:>2000`,
+            page: pageNumber,
+            per_page: 100,
+          },
+        })
+      ).data.map((article: any) => {
+        return {
+          title: article.title,
+          likesCount: article.likes_count,
+          createdAt: article.created_at,
+          updatedAt: article.updated_at,
+          url: article.url,
+        };
+      });
 
-      while (true) {
-        const responseData = (
-          await axios.get("https://qiita.com/api/v2/items", {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-            params: {
-              query: `${createdAtRange} stocks:>4000`,
-              page: pageNumber,
-              per_page: 100,
-            },
-          })
-        ).data.map((article: any) => {
-          return {
-            title: article.title,
-            likesCount: article.likes_count,
-            createdAt: article.created_at,
-            updatedAt: article.updated_at,
-            url: article.url,
-          };
-        });
-
-        // console.log("---------------------------");
-        // console.log(createdAtRange);
-        // console.log("---------------------------");
-        if (responseData.length === 0) {
-          break;
-        }
-
-        // console.log("---------------------------");
-        // console.log(responseData);
-        // console.log(createdAtRange);
-        // console.log("---------------------------");
-
-        allResponseData.push(responseData);
-
-        pageNumber++;
+      if (responseData.length === 0) {
+        break;
       }
 
-      return allResponseData;
-    })
-  );
+      allResponseData.push(responseData);
+
+      pageNumber++;
+    }
+
+    likesRanking.push(...allResponseData.flat());
+  }
 
   return likesRanking
-    .flat()
-    .sort((a: any, b: any) => {
+    .sort((a, b) => {
       if (a.likesCount > b.likesCount) {
         return -1;
       }
@@ -136,7 +124,8 @@ async function makeArticleBody(likesRanking: any) {
   return articleBody;
 }
 
-async function makeCreatedAtRangeList() {
+// TODO: helperでも良さそう
+function makeCreatedAtRangeList() {
   const createdAtRangeList = [];
   for (
     let year = 11;

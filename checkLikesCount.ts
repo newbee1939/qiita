@@ -9,49 +9,47 @@ checkLikesCount();
 // 1000ストック以下の記事でいいね数が1000以上の記事がないことをチェックする
 // このチェックに通ったら、1000ストック以上でlikesRankingの条件を絞ることができる
 async function checkLikesCount() {
-  const createdAtRangeList = makeCreatedAtRangeList();
-  const allResponseData = await createdAtRangeList.map(
-    async (createdAtRange) => {
-      let pageNumber = 1;
-      let responseDataOneMonth = [];
+  const createdAtRangeList = await makeCreatedAtRangeList();
+  // mapの中でpromiseが返る
+  const allResponseData = createdAtRangeList.map(async (createdAtRange) => {
+    let pageNumber = 1;
+    let responseDataOneMonth = [];
 
-      while (true) {
-        const responseData = await (
-          await axios.get("https://qiita.com//api/v2/items", {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-            params: {
-              query: `${createdAtRange} stocks:<=1000`,
-              page: pageNumber,
-              per_page: 100,
-            },
-          })
-        ).data.filter((article: any) => {
-          return article.likes_count >= 1000;
-        });
+    while (true) {
+      const responseData = (
+        await axios.get("https://qiita.com//api/v2/items", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          params: {
+            query: `${createdAtRange} stocks:<=1000`,
+            page: pageNumber,
+            per_page: 100,
+          },
+        })
+      ).data.filter((article: any) => {
+        return article.likes_count >= 1000;
+      });
 
-        if (responseData.length !== 0) {
-          break;
-        }
-
-        responseDataOneMonth.push(await responseData);
-
-        pageNumber++;
+      if (responseData.length !== 0) {
+        break;
       }
 
-      return responseDataOneMonth.flat();
-    }
-  );
+      responseDataOneMonth.push(responseData);
 
-  console.log("-------------------------------------");
+      pageNumber++;
+    }
+
+    return responseDataOneMonth.flat();
+  });
+
+  // Promiseが出る
   console.log(allResponseData);
-  console.log("-------------------------------------");
 
   return allResponseData.flat();
 }
 
-function makeCreatedAtRangeList() {
+async function makeCreatedAtRangeList() {
   const createdAtRangeList = [];
   for (
     let year = 11;

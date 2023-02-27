@@ -14,15 +14,17 @@ async function makeLikesRankingArticle() {
   await makeAndPostArticle(likesRanking);
 }
 
+// ここから。undefinedになっってるぽい。。マジやる
 async function makeLikesRanking() {
-  let apiRequestCount = 0;
   const createdAtRangeList = makeCreatedAtRangeList();
-  const likesRanking = createdAtRangeList.map(async (createdAtRange) => {
+  const likesRanking = await createdAtRangeList.map(async (createdAtRange) => {
     let pageNumber = 1;
     let allResponseData = [];
 
+    console.log(createdAtRange);
+
     while (true) {
-      const responseData = (
+      const responseData = await (
         await axios.get("https://qiita.com//api/v2/items", {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -34,6 +36,12 @@ async function makeLikesRanking() {
           },
         })
       ).data.map((article: any) => {
+        console.log("ここた");
+
+        console.log(createdAtRange);
+
+        console.log(article);
+
         return {
           title: article.title,
           likesCount: article.likes_count,
@@ -42,21 +50,22 @@ async function makeLikesRanking() {
           url: article.url,
         };
       });
-      apiRequestCount++;
+
+      console.log("ここ来た");
+      console.log(responseData);
+      return;
 
       if (responseData.length === 0) {
         break;
       }
 
-      allResponseData.push(responseData);
+      allResponseData.push(await responseData);
 
       pageNumber++;
     }
 
     return allResponseData.flat();
   });
-
-  console.log(`APIのリクエスト回数は${apiRequestCount}回です！`);
 
   return likesRanking
     .flat()

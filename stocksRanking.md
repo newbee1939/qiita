@@ -1,5 +1,5 @@
 
-## 【rank位】title（stockストック）
+## 【rank】title（stockストック）
 
 url
 

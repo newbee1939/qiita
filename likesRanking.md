@@ -1,5 +1,5 @@
 
-## 【rank位】title（stockストック）
+## 【rank位】title（likeいいね）
 
 url
 

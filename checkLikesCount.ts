@@ -11,6 +11,7 @@ checkLikesCount();
 async function checkLikesCount() {
   const createdAtRangeList = await makeCreatedAtRangeList();
   // mapの中でpromiseが返る
+  // TODO:for of に直す
   const allResponseData = createdAtRangeList.map(async (createdAtRange) => {
     let pageNumber = 1;
     let responseDataOneMonth = [];

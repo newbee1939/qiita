@@ -130,6 +130,7 @@ export const formatDate = (dateTime: string): string => {
   return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
 };
 
+// TODO:このあたりhelperとして共通化する
 function makeRank(rank: number) {
   if (rank === 1) {
     return '<font color="#EFAF00">1位</font>';

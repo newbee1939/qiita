@@ -12,12 +12,12 @@ async function execute() {
     console.log("大丈夫そうですう！！");
   }
   console.log(
-    "1000ストック以下の記事でいいね数が1000以上の記事が存在しています。。"
+    "800ストック以下の記事でいいね数が1000以上の記事が存在しています。。"
   );
 }
 
-// 1000ストック以下の記事でいいね数が1000以上の記事がないことをチェックする
-// このチェックに通ったら、「1000ストックより大きい」でlikesRankingの条件を絞ることができる
+// 800ストック以下の記事でいいね数が1000以上の記事がないことをチェックする
+// このチェックに通ったら、「800ストックより大きい」でlikesRankingの条件を絞ることができる
 async function checkLikesCount(): Promise<boolean> {
   const createdAtRangeList = await makeCreatedAtRangeList();
 
@@ -32,7 +32,7 @@ async function checkLikesCount(): Promise<boolean> {
             Authorization: `Bearer ${accessToken}`,
           },
           params: {
-            query: `${createdAtRange} stocks:<=1000`,
+            query: `${createdAtRange} stocks:<=800`,
             page: pageNumber,
             per_page: 100,
           },

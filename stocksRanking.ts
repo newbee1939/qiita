@@ -24,7 +24,7 @@ async function makeStocksRanking() {
           Authorization: `Bearer ${accessToken}`,
         },
         params: {
-          query: "stocks:>2000",
+          query: "stocks:>2300",
           page: pageNumber,
           per_page: 100,
         },

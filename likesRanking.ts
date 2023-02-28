@@ -31,7 +31,7 @@ async function makeLikesRanking() {
             Authorization: `Bearer ${accessToken}`,
           },
           params: {
-            query: `${createdAtRange} stocks:>1000`,
+            query: `${createdAtRange} stocks:>800`,
             page: pageNumber,
             per_page: 100,
           },

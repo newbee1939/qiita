@@ -35,7 +35,13 @@ async function checkLikesCount(): Promise<boolean> {
             per_page: 100,
           },
         })
-      ).data;
+      ).data.map((article: any) => {
+        return {
+          title: article.title,
+          likesCount: article.likes_count,
+          url: article.url,
+        };
+      });
 
       if (responseData.length === 0) {
         break;
@@ -46,6 +52,7 @@ async function checkLikesCount(): Promise<boolean> {
       });
 
       if (filteredResponseData.length !== 0) {
+        console.log(filteredResponseData);
         return false;
       }
 

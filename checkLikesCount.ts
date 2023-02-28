@@ -22,6 +22,8 @@ async function checkLikesCount(): Promise<boolean> {
   const createdAtRangeList = await makeCreatedAtRangeList();
 
   for (const createdAtRange of createdAtRangeList) {
+    console.log(`${createdAtRange}がスタート`);
+
     let pageNumber = 1;
     while (true) {
       const responseData = (
@@ -58,6 +60,8 @@ async function checkLikesCount(): Promise<boolean> {
 
       pageNumber++;
     }
+
+    console.log(`${createdAtRange}はOK！`);
   }
 
   return true;

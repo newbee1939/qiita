@@ -9,7 +9,7 @@ execute();
 
 async function execute() {
   if (await checkLikesCount()) {
-    console.log("大丈夫そうですう");
+    console.log("大丈夫そうですう！！");
   }
   console.log(
     "1000ストック以下の記事でいいね数が1000以上の記事が存在しています。。"
@@ -17,15 +17,15 @@ async function execute() {
 }
 
 // 1000ストック以下の記事でいいね数が1000以上の記事がないことをチェックする
-// このチェックに通ったら、1000ストック以上でlikesRankingの条件を絞ることができる
+// このチェックに通ったら、「1000ストックより大きい」でlikesRankingの条件を絞ることができる
 async function checkLikesCount(): Promise<boolean> {
-  const createdAtRangeList = makeCreatedAtRangeList();
+  const createdAtRangeList = await makeCreatedAtRangeList();
 
   for (const createdAtRange of createdAtRangeList) {
     let pageNumber = 1;
     while (true) {
       const responseData = (
-        await axios.get("https://qiita.com//api/v2/items", {
+        await axios.get("https://qiita.com/api/v2/items", {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -35,11 +35,17 @@ async function checkLikesCount(): Promise<boolean> {
             per_page: 100,
           },
         })
-      ).data.filter((article: any) => {
+      ).data;
+
+      if (responseData.length === 0) {
+        break;
+      }
+
+      const filteredResponseData = responseData.filter((article: any) => {
         return article.likes_count >= 1000;
       });
 
-      if (responseData.length !== 0) {
+      if (filteredResponseData.length !== 0) {
         return false;
       }
 

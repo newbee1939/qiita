@@ -1,4 +1,4 @@
-export function makeCreatedAtRangeList() {
+export async function makeCreatedAtRangeList() {
   const createdAtRangeList = [];
   for (
     let year = 11;

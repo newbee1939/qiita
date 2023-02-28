@@ -17,7 +17,7 @@ async function makeLikesRankingArticle() {
 }
 
 async function makeLikesRanking() {
-  const createdAtRangeList = makeCreatedAtRangeList();
+  const createdAtRangeList = await makeCreatedAtRangeList();
   const likesRanking = [];
 
   for (const createdAtRange of createdAtRangeList) {
@@ -31,7 +31,7 @@ async function makeLikesRanking() {
             Authorization: `Bearer ${accessToken}`,
           },
           params: {
-            query: `${createdAtRange} stocks:>2000`,
+            query: `${createdAtRange} stocks:>1000`,
             page: pageNumber,
             per_page: 100,
           },

@@ -87,8 +87,6 @@ async function makeAndPostArticle(likesRanking: any) {
     ],
   };
 
-  console.log("postきった");
-
   try {
     await axios.post("https://qiita.com/api/v2/items", articleInformation, {
       headers: {

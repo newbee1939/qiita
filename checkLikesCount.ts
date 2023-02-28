@@ -4,15 +4,23 @@ dotenv.config();
 
 const accessToken = process.env.ACCESS_TOKEN;
 
-checkLikesCount();
+execute();
+
+function execute() {
+  if (checkLikesCount()) {
+    console.log("大丈夫そうですう");
+  }
+  console.log(
+    "1000ストック以下の記事でいいね数が1000以上の記事が存在しています。。"
+  );
+}
 
 // 1000ストック以下の記事でいいね数が1000以上の記事がないことをチェックする
 // このチェックに通ったら、1000ストック以上でlikesRankingの条件を絞ることができる
 async function checkLikesCount() {
   const createdAtRangeList = await makeCreatedAtRangeList();
-  // mapの中でpromiseが返る
-  // TODO:for of に直す
-  const allResponseData = createdAtRangeList.map(async (createdAtRange) => {
+
+  for (const createdAtRange of createdAtRangeList) {
     let pageNumber = 1;
     let responseDataOneMonth = [];
 
@@ -33,21 +41,12 @@ async function checkLikesCount() {
       });
 
       if (responseData.length !== 0) {
-        break;
+        return false;
       }
-
-      responseDataOneMonth.push(responseData);
 
       pageNumber++;
     }
-
-    return responseDataOneMonth.flat();
-  });
-
-  // Promiseが出る
-  console.log(allResponseData);
-
-  return allResponseData.flat();
+  }
 }
 
 async function makeCreatedAtRangeList() {

@@ -25,7 +25,7 @@ async function checkLikesCount(): Promise<boolean> {
   for (const createdAtRange of createdAtRangeList) {
     console.log(`-----${createdAtRange}がスタート-----`);
 
-    const createdAtSkipRangeList = []; // 処理をスキップする createdAtRange を指定する
+    const createdAtSkipRangeList: string[] = []; // 処理をスキップする createdAtRange を指定する
     if (createdAtSkipRangeList.includes(createdAtRange)) {
       break;
     }

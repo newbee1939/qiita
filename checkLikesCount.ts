@@ -56,7 +56,7 @@ async function checkLikesCount(): Promise<boolean> {
         };
       });
       apiCount++;
-      console.log(`現在APIを${apiCount}叩いています。`);
+      console.log(`現在APIを${apiCount}回叩いています。`);
 
       if (responseData.length === 0) {
         break;

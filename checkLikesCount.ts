@@ -32,7 +32,7 @@ async function checkLikesCount(): Promise<boolean> {
             Authorization: `Bearer ${accessToken}`,
           },
           params: {
-            query: `${createdAtRange} stocks:<=800`,
+            query: `${createdAtRange} stocks:<=800`, // TODO:created:>2018-12-01 created:<2019-01-01 stocks:<=800 とか100件*100ページネーションの制限を超える。。どうする？
             page: pageNumber,
             per_page: 100,
           },

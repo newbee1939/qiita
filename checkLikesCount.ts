@@ -12,27 +12,38 @@ async function execute() {
     console.log("大丈夫そうですう！！");
   }
   console.log(
-    "800ストック以下の記事でいいね数が1000以上の記事が存在しています。。"
+    "800ストック以下の記事でいいね数が2000以上の記事が存在しています。。"
   );
 }
 
-// 800ストック以下の記事でいいね数が1000以上の記事がないことをチェックする
+// 800ストック以下の記事でいいね数が2000以上の記事がないことをチェックする
 // このチェックに通ったら、「800ストックより大きい」でlikesRankingの条件を絞ることができる
 async function checkLikesCount(): Promise<boolean> {
   const createdAtRangeList = await makeCreatedAtRangeList();
+  let apiCount = 0;
 
   for (const createdAtRange of createdAtRangeList) {
-    console.log(`${createdAtRange}がスタート`);
+    console.log(`-----${createdAtRange}がスタート-----`);
+
+    const createdAtSkipRangeList = []; // 処理をスキップする createdAtRange を指定する
+    if (createdAtSkipRangeList.includes(createdAtRange)) {
+      break;
+    }
 
     let pageNumber = 1;
     while (true) {
+      if (pageNumber > 100) {
+        console.log(`${createdAtRange}ではpageNumberが100を超えました。。`);
+        break;
+      }
+
       const responseData = (
         await axios.get("https://qiita.com/api/v2/items", {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
           params: {
-            query: `${createdAtRange} stocks:<=800`, // TODO:created:>2018-12-01 created:<2019-01-01 stocks:<=800 とか100件*100ページネーションの制限を超える。。どうする？
+            query: `${createdAtRange} stocks:<=800`,
             page: pageNumber,
             per_page: 100,
           },
@@ -44,13 +55,15 @@ async function checkLikesCount(): Promise<boolean> {
           url: article.url,
         };
       });
+      apiCount++;
+      console.log(`現在APIを${apiCount}叩いています。`);
 
       if (responseData.length === 0) {
         break;
       }
 
       const filteredResponseData = responseData.filter((article: any) => {
-        return article.likes_count >= 1000;
+        return article.likes_count >= 2000;
       });
 
       if (filteredResponseData.length !== 0) {
@@ -61,7 +74,7 @@ async function checkLikesCount(): Promise<boolean> {
       pageNumber++;
     }
 
-    console.log(`${createdAtRange}はOK！`);
+    console.log(`-----${createdAtRange}はOK！-----`);
   }
 
   return true;

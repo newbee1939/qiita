@@ -3,6 +3,7 @@ import * as fs from "node:fs/promises";
 import dotenv from "dotenv";
 import { makeRank } from "./helper/makeRank";
 import { formatDate } from "./helper/formatDate";
+import { makeCreatedAtRangeList } from "./helper/makeCreatedAtRangeList";
 dotenv.config();
 
 const accessToken = process.env.ACCESS_TOKEN;
@@ -122,32 +123,4 @@ async function makeArticleBody(likesRanking: any) {
   );
 
   return articleBody;
-}
-
-// TODO: helperでも良さそう
-function makeCreatedAtRangeList() {
-  const createdAtRangeList = [];
-  for (
-    let year = 11;
-    year <= Number(new Date().getFullYear().toString().replace("20", ""));
-    year++
-  ) {
-    for (let month = 1; month <= 12; month++) {
-      if (month === 12) {
-        createdAtRangeList.push(
-          `created:>=20${year}-12-01 created:<20${year + 1}-01-01`
-        );
-      } else {
-        createdAtRangeList.push(
-          `created:>=20${year}-${month
-            .toString()
-            .padStart(2, "0")}-01 created:<20${year}-${(month + 1)
-            .toString()
-            .padStart(2, "0")}-01`
-        );
-      }
-    }
-  }
-
-  return createdAtRangeList;
 }

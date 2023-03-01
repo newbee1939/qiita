@@ -10,6 +10,8 @@ TODO: 無料のバッチで自動更新にしたい
 TODO: jest でテスト書く
 TODO: TypeScript でスクラッチする場合のディレクトリ構成
 
+// とりあえず created:>=2015-08-01 created:<2015-09-01 までは大丈夫であることを確認した
+
 # 記事の更新方法
 
 - npm run hoge.ts

@@ -1,8 +1,7 @@
-// 始まりの年月を引数で指定できるようにする。デフォルト値は2011年1月でいい
-export async function makeCreatedAtRangeList() {
+export async function makeCreatedAtRangeList(startYear = 11) {
   const createdAtRangeList = [];
   for (
-    let year = 11;
+    let year = startYear;
     year <= Number(new Date().getFullYear().toString().replace("20", ""));
     year++
   ) {

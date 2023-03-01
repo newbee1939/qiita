@@ -3,59 +3,55 @@ import dotenv from "dotenv";
 import { makeCreatedAtRangeList } from "./helper/makeCreatedAtRangeList";
 dotenv.config();
 
-// それかトークンを複数発行する？
-const accessToken = process.env.ACCESS_TOKEN;
+let accessTokenList = [
+  process.env.ACCESS_TOKEN_1,
+  process.env.ACCESS_TOKEN_2,
+  process.env.ACCESS_TOKEN_3,
+  process.env.ACCESS_TOKEN_4,
+  process.env.ACCESS_TOKEN_5,
+  process.env.ACCESS_TOKEN_6,
+  process.env.ACCESS_TOKEN_7,
+];
 
 execute();
 
 async function execute() {
   if (await checkLikesCount()) {
-    console.log("大丈夫そうですう！！");
+    console.log("大丈夫そうですうう！！");
   }
   console.log(
     "500ストック以下の記事でいいね数が2000以上の記事が存在しています。。"
   );
 }
 
-// TODO:ログをファイルに出すようにする
 // 500ストック以下の記事でいいね数が2000以上の記事がないことをチェックする
 // このチェックに通ったら、「500ストックより大きい」でlikesRankingの条件を絞ることができる
 async function checkLikesCount(): Promise<boolean> {
   const createdAtRangeList = await makeCreatedAtRangeList();
   let apiCount = 0;
+  let accessTokenCount = 0;
+  let over100PageCreatedAtRangelist = [];
 
   for (const createdAtRange of createdAtRangeList) {
-    if (apiCount === 1000) {
-      function hoge() {
-        console.log("3秒経ちました！");
-      }
-      setInterval(() => {
-        console.log(
-          "1時間が経過したので1000リクエストの制約が解除されました。"
-        );
-      }, 3600000);
-      apiCount = 0;
-    }
-
     console.log(`-----${createdAtRange}がスタート-----`);
 
-    // とりあえずcreated:>=2015-08-01 created:<2015-09-01まではスキップで良さそう。いい方法ある？
-    const createdAtSkipRangeList: string[] = []; // 処理をスキップする createdAtRange を指定する
-    if (createdAtSkipRangeList.includes(createdAtRange)) {
-      break;
+    if (apiCount === 1000) {
+      apiCount = 0;
+      accessTokenCount++; // 1時間あたりのアクセス制限を回避するためトークンの入れ替えを行う
     }
 
     let pageNumber = 1;
     while (true) {
       if (pageNumber > 100) {
-        console.log(`${createdAtRange}ではpageNumberが100を超えました。。`);
+        console.log(`${createdAtRange}ではpageNumberが100を超えました。。`); // TODO:100を超えたrangeの再処理も自動化したい
+        over100PageCreatedAtRangelist.push(createdAtRange);
         break;
       }
 
       const responseData = (
         await axios.get("https://qiita.com/api/v2/items", {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${accessTokenList[accessTokenCount]}`,
           },
           params: {
             query: `${createdAtRange} stocks:<=500`,
@@ -78,12 +74,17 @@ async function checkLikesCount(): Promise<boolean> {
       }
 
       const filteredResponseData = responseData.filter((article: any) => {
-        return article.likes_count >= 2000;
+        return article.likesCount >= 2000;
       });
 
       if (filteredResponseData.length !== 0) {
-        console.log(filteredResponseData);
-        return false;
+        console.log(
+          `次のデータは2000いいねを超えています。。:${filteredResponseData}`
+        );
+        console.log(
+          `PageNumberが100を超えたrangeはこちら:${over100PageCreatedAtRangelist}`
+        );
+        return false; // 2000いいね以上の記事が存在したらアウト
       }
 
       pageNumber++;
@@ -92,5 +93,8 @@ async function checkLikesCount(): Promise<boolean> {
     console.log(`-----${createdAtRange}はOK！-----`);
   }
 
+  console.log(
+    `PageNumberが100を超えたrangeはこちら:${over100PageCreatedAtRangelist}`
+  );
   return true;
 }

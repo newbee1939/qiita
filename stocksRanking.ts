@@ -68,7 +68,6 @@ async function makeAndPatchArticle(stocksRanking: any) {
   const articleInformation = {
     title: "【保存版】Qiita歴代ストック数ランキング100",
     body: await makeArticleBody(stocksRanking),
-    private: true,
     tags: [
       { name: "TypeScript" },
       { name: "QiitaAPI" },

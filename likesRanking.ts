@@ -21,12 +21,13 @@ async function makeLikesRanking() {
   const likesRanking = [];
 
   for (const createdAtRange of createdAtRangeList) {
-    console.log(`${createdAtRange}の処理がスタート！`);
+    console.log(`${createdAtRange}の処理がスタート`);
 
     let pageNumber = 1;
     let allResponseData = [];
 
     while (true) {
+      console.log(`ページ数は${pageNumber}です`);
       const responseData = (
         await axios.get("https://qiita.com/api/v2/items", {
           headers: {
@@ -58,6 +59,8 @@ async function makeLikesRanking() {
     }
 
     likesRanking.push(...allResponseData.flat());
+
+    console.log(`${createdAtRange}の処理が完了`);
   }
 
   return likesRanking

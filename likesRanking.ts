@@ -27,7 +27,6 @@ async function makeLikesRanking() {
     let allResponseData = [];
 
     while (true) {
-      console.log(`${pageNumber}ページ`);
       const responseData = (
         await axios.get("https://qiita.com/api/v2/items", {
           headers: {
@@ -52,6 +51,8 @@ async function makeLikesRanking() {
       if (responseData.length === 0) {
         break;
       }
+
+      console.log(`${pageNumber}ページ`);
 
       allResponseData.push(responseData);
 

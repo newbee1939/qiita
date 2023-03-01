@@ -21,6 +21,8 @@ async function makeLikesRanking() {
   const likesRanking = [];
 
   for (const createdAtRange of createdAtRangeList) {
+    console.log(`${createdAtRange}の処理がスタート！`);
+
     let pageNumber = 1;
     let allResponseData = [];
 

@@ -11,7 +11,7 @@ makeStocksRankingArticle();
 
 async function makeStocksRankingArticle() {
   const stocksRanking = await makeStocksRanking();
-  await makeAndPostArticle(stocksRanking);
+  await makeAndPatchArticle(stocksRanking);
 }
 
 async function makeStocksRanking() {
@@ -64,9 +64,7 @@ async function makeStocksRanking() {
   return stocksRanking;
 }
 
-// TODO:一回目投稿した後は更新にしたい
-// 一度投稿したらこれに変更で良さそう（https://qiita.com/api/v2/docs#patch-apiv2itemsitem_id）
-async function makeAndPostArticle(stocksRanking: any) {
+async function makeAndPatchArticle(stocksRanking: any) {
   const articleInformation = {
     title: "【保存版】Qiita歴代ストック数ランキング100",
     body: await makeArticleBody(stocksRanking),
@@ -81,16 +79,20 @@ async function makeAndPostArticle(stocksRanking: any) {
   };
 
   try {
-    await axios.post("https://qiita.com/api/v2/items", articleInformation, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-    console.log("投稿が完了しました！");
+    await axios.patch(
+      "https://qiita.com/api/v2/items/2391cd66cd00048df7cb",
+      articleInformation,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log("更新が完了しました！");
   } catch (e) {
     console.log(e);
-    console.log("投稿に失敗しました。。");
+    console.log("更新に失敗しました。。");
   }
 }
 

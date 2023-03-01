@@ -13,7 +13,7 @@ makeLikesRankingArticle();
 async function makeLikesRankingArticle() {
   const likesRanking = await makeLikesRanking();
 
-  await makeAndPostArticle(likesRanking);
+  await makeAndPatchArticle(likesRanking);
 }
 
 async function makeLikesRanking() {
@@ -71,9 +71,7 @@ async function makeLikesRanking() {
     .slice(0, 100);
 }
 
-// TODO:一回目投稿した後は更新にしたい
-// 一度投稿したらこれに変更で良さそう（https://qiita.com/api/v2/docs#patch-apiv2itemsitem_id）
-async function makeAndPostArticle(likesRanking: any) {
+async function makeAndPatchArticle(likesRanking: any) {
   const articleInformation = {
     title: "【保存版】Qiita歴代いいね数ランキング100",
     body: await makeArticleBody(likesRanking),
@@ -88,16 +86,20 @@ async function makeAndPostArticle(likesRanking: any) {
   };
 
   try {
-    await axios.post("https://qiita.com/api/v2/items", articleInformation, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-    console.log("投稿が完了しました！");
+    await axios.patch(
+      "https://qiita.com/api/v2/items/48a37fcdc458603797de",
+      articleInformation,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log("更新が完了しました！");
   } catch (e) {
     console.log(e);
-    console.log("投稿に失敗しました。。");
+    console.log("更新に失敗しました。。");
   }
 }
 

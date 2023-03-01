@@ -107,7 +107,7 @@ async function makeArticleBody(likesRanking: any) {
     async (prevArticleBody: string, rankingData: any, index: number) => {
       const content = await fs.readFile("likesRanking.md", "utf-8");
       return (
-        prevArticleBody +
+        (await prevArticleBody) +
         content
           .replace("rank", makeRank(index + 1))
           .replace("title", rankingData.title)

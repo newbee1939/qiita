@@ -6,7 +6,7 @@ import { formatDate } from "./helper/formatDate";
 import { makeCreatedAtRangeList } from "./helper/makeCreatedAtRangeList";
 dotenv.config();
 
-const accessToken = process.env.ACCESS_TOKEN;
+const accessToken = process.env.ACCESS_TOKEN_2;
 
 makeLikesRankingArticle();
 
@@ -107,7 +107,7 @@ async function makeArticleBody(likesRanking: any) {
     async (prevArticleBody: string, rankingData: any, index: number) => {
       const content = await fs.readFile("likesRanking.md", "utf-8");
       return (
-        (await prevArticleBody) +
+        prevArticleBody +
         content
           .replace("rank", makeRank(index + 1))
           .replace("title", rankingData.title)

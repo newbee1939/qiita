@@ -5,7 +5,7 @@ import { makeRank } from "./helper/makeRank";
 import { formatDate } from "./helper/formatDate";
 dotenv.config();
 
-const accessToken = process.env.ACCESS_TOKEN;
+const accessToken = process.env.ACCESS_TOKEN_1;
 
 makeStocksRankingArticle();
 
@@ -100,7 +100,7 @@ async function makeArticleBody(stocksRanking: any) {
     async (prevArticleBody: string, rankingData: any, index: number) => {
       const content = await fs.readFile("stocksRanking.md", "utf-8");
       return (
-        (await prevArticleBody) +
+        prevArticleBody +
         content
           .replace("rank", makeRank(index + 1))
           .replace("title", rankingData.title)

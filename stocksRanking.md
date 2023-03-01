@@ -1,7 +1,7 @@
 
-## 【rank】title（stockストック）
+## 【rankValue】titleValue（stockValueストック）
 
-url
+urlValue
 
-投稿日：createdAt
-更新日：updatedAt
+投稿日：createdAtValue
+更新日：updatedAtValue

@@ -75,6 +75,7 @@ async function makeAndPatchArticle(likesRanking: any) {
   const articleInformation = {
     title: "【保存版】Qiita歴代いいね数ランキング100",
     body: await makeArticleBody(likesRanking),
+    private: true,
     tags: [
       { name: "TypeScript" },
       { name: "QiitaAPI" },
@@ -110,12 +111,12 @@ async function makeArticleBody(likesRanking: any) {
       return (
         (await prevArticleBody) +
         content
-          .replace("rank", makeRank(index + 1))
-          .replace("title", rankingData.title)
-          .replace("like", rankingData.likesCount)
-          .replace("url", rankingData.url)
-          .replace("createdAt", formatDate(rankingData.createdAt))
-          .replace("updatedAt", formatDate(rankingData.updatedAt))
+          .replace("rankValue", makeRank(index + 1))
+          .replace("titleValue", rankingData.title)
+          .replace("likeValue", rankingData.likesCount)
+          .replace("urlValue", rankingData.url)
+          .replace("createdAtValue", formatDate(rankingData.createdAt))
+          .replace("updatedAtValue", formatDate(rankingData.updatedAt))
       );
     },
     lead

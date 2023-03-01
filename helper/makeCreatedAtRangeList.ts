@@ -1,3 +1,4 @@
+// 始まりの年月を引数で指定できるようにする。デフォルト値は2011年1月でいい
 export async function makeCreatedAtRangeList() {
   const createdAtRangeList = [];
   for (

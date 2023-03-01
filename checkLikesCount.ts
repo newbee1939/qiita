@@ -16,6 +16,7 @@ async function execute() {
   );
 }
 
+// TODO:ログをファイルに出すようにする
 // 800ストック以下の記事でいいね数が2000以上の記事がないことをチェックする
 // このチェックに通ったら、「800ストックより大きい」でlikesRankingの条件を絞ることができる
 async function checkLikesCount(): Promise<boolean> {

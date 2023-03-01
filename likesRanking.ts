@@ -81,7 +81,6 @@ async function makeAndPatchArticle(likesRanking: any) {
   const articleInformation = {
     title: "【保存版】Qiita歴代いいね数ランキング100",
     body: await makeArticleBody(likesRanking),
-    private: true,
     tags: [
       { name: "TypeScript" },
       { name: "QiitaAPI" },

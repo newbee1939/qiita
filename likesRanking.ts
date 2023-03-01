@@ -6,7 +6,7 @@ import { formatDate } from "./helper/formatDate";
 import { makeCreatedAtRangeList } from "./helper/makeCreatedAtRangeList";
 dotenv.config();
 
-const accessToken = process.env.ACCESS_TOKEN_2;
+const accessToken = process.env.ACCESS_TOKEN_3;
 
 makeLikesRankingArticle();
 
@@ -21,13 +21,13 @@ async function makeLikesRanking() {
   const likesRanking = [];
 
   for (const createdAtRange of createdAtRangeList) {
-    console.log(`${createdAtRange}の処理がスタート`);
+    console.log(`-----${createdAtRange}-----`);
 
     let pageNumber = 1;
     let allResponseData = [];
 
     while (true) {
-      console.log(`ページ数は${pageNumber}です`);
+      console.log(`${pageNumber}ページ`);
       const responseData = (
         await axios.get("https://qiita.com/api/v2/items", {
           headers: {
@@ -60,7 +60,7 @@ async function makeLikesRanking() {
 
     likesRanking.push(...allResponseData.flat());
 
-    console.log(`${createdAtRange}の処理が完了`);
+    console.log(`-----${createdAtRange}-----`);
   }
 
   return likesRanking

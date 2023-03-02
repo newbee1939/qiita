@@ -109,7 +109,7 @@ async function makeAndPatchArticle(likesRanking: any) {
 }
 
 async function makeArticleBody(likesRanking: any) {
-  const lead = "※この記事は定期的に更新して最新状態を保ちます<br>";
+  const lead = await fs.readFile("likesRankingLead.md", "utf-8");
   const articleBody = likesRanking.reduce(
     async (prevArticleBody: string, rankingData: any, index: number) => {
       const content = await fs.readFile("likesRanking.md", "utf-8");

@@ -1,20 +1,16 @@
 # qiita
 
-# document
+## document
 
 - Qiita API:https://qiita.com/api/v2/docs
-- created:>2015-10-01 created:<2015-11-01
 - https://help.qiita.com/ja/articles/qiita-search-options
+- https://scrapbox.io/masaks/Promise%E3%81%AE%E7%9B%B4%E5%88%97%E5%8C%96
 
-TODO: 無料のバッチで自動更新にしたい
-TODO: jest でテスト書く
-TODO: TypeScript でスクラッチする場合のディレクトリ構成
+## how to update
 
-// とりあえず created:>=2015-08-01 created:<2015-09-01 までは大丈夫であることを確認した
+- npm run ts stocksRanking.ts
+- npm run ts likesRanking.ts
 
-# 記事の更新方法
+## TODO
 
-- npm run hoge.ts
-
-これが良さそう
-https://scrapbox.io/masaks/Promise%E3%81%AE%E7%9B%B4%E5%88%97%E5%8C%96
+- 無料のバッチで自動更新にしたい
